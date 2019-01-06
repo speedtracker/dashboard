@@ -15,16 +15,27 @@ class App extends React.Component {
   constructor (props) {
     super(props)
 
+    const DEFAULT_PROFILE = {
+      name: 'Default',
+      parameters: {},
+      slug: 'default'
+    }
     const urlParameters = parseUrl(window.location.search)
     const config = window.__SPEEDTRACKER_CONFIG || {}
-    const profiles = Object.keys(config.profiles || {}).map(name => {
+
+    let profiles = Object.keys(config.profiles || {}).map(name => {
       return Object.assign({}, config.profiles[name], {
         slug: name
       })
     })
-    const activeProfile = profiles.find((profile, index) => {
+    let activeProfile = profiles.find((profile, index) => {
       return urlParameters.profile === profile.slug
-    }) || profiles[0]
+    }) || profiles[0] || DEFAULT_PROFILE
+
+    if (profiles.length === 0) {
+      profiles = [DEFAULT_PROFILE]
+    }
+
     const period = Constants.periods.indexOf(urlParameters.period) > -1
       ? urlParameters.period
       : 'week'
